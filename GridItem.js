@@ -30,6 +30,8 @@ class GridItem extends Component {
 
     @autobind
     handleDragStart(evt) {
+        const { onDragStart } = this.props
+
         this.setState({
             dragging: true,
             startX: evt.pageX,
@@ -37,10 +39,13 @@ class GridItem extends Component {
             lastX: evt.pageX,
             lastY: evt.pageY,
         })
+
+        onDragStart(this.state)
     }
 
     @autobind
     handleDragMove(evt) {
+        const { onDragMove } = this.props
         const { dragging, lastX, lastY, currentX, currentY } = this.state
 
         if (!dragging) {
@@ -56,10 +61,14 @@ class GridItem extends Component {
             currentX: currentX + deltaX,
             currentY: currentY + deltaY,
         })
+
+        onDragMove(this.state)
     }
 
     @autobind
     handleDragEnd(evt) {
+        const { onDragEnd } = this.props
+
         this.setState({
             dragging: false,
             startX: 0,
@@ -67,27 +76,47 @@ class GridItem extends Component {
             lastX: 0,
             lastY: 0,
         })
+
+        onDragEnd(this.state)
+    }
+
+    getStyle(x, y) {
+        const { width, height } = this.props
+        const itemStyle = {}
+        const transform = `translate3d(${x}px, ${y}px, 0)`
+
+        // Fix size 
+        itemStyle.width = width
+        itemStyle.height = height
+
+        // Makes position
+        itemStyle.position = 'absolute'
+        itemStyle.display = 'inline-block'
+        itemStyle.zIndex = 1000
+
+        // Turn off animations for this item
+        itemStyle.WebkitTransform = transform
+        itemStyle.MozTransform = transform
+        itemStyle.msTransform = transform
+        itemStyle.transform = transform
+
+        // Allows mouseover to work
+        itemStyle.pointerEvents = 'none'
     }
 
     render() {
-        const { children, width, height } = this.props
+        const { key, children, width, height } = this.props
         const { currentX, currentY } = this.state
-
-        const itemStyle = {
-            width,
-            height,
-            display: 'inline-block',
-            position: 'absolute',
-            transform: `translate(${currentX}, ${currentY}})`
-        }
 
         return (
             <div
+                key         = {key}
+                idx         = {idx}
                 className   = {this.className}
                 onMouseDown = {this.handleDragStart}
                 onMouseMove = {this.handleDragMove}
                 onMouseUp   = {this.handleDragEnd}
-                style       = {itemStyle}
+                style       = {this.getStyle(currentX, currentY)}
             >
                 {React.Children.only(children)}
             </div>

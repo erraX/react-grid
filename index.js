@@ -34,6 +34,7 @@ export default class ReactGrid extends Component {
         return children.map((child, idx) => 
             <GridItem
                 key         = {`griditem_${idx}`}
+                idx         = {idx}
                 x           = {0}
                 y           = {0}
                 onDragStart = {this.handleDragStart}
@@ -59,6 +60,7 @@ export default class ReactGrid extends Component {
                 className = {this.className}
                 style     = {gridStyle}
             >
+                {this.renderChildren()}
             </div>
         )
     }
